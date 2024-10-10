@@ -1,0 +1,54 @@
+import { DefaultApi, type Character } from '../../lib/rick-and-morty-api-client';
+import { useEffect, useState } from 'react';
+const CharacterDetails = () => {
+  const [character, setCharacter] = useState<Character>();
+
+  useEffect(() => {
+    const api = new DefaultApi();
+    const params = new URLSearchParams(window.location.search);
+    const id = params.has('id') ? Number(params.get('id')) : 1;
+    api.getSingleCharacter({ id }).then((response: Character) => {
+      setCharacter(response);
+    });
+  }, []);
+
+  if (!character) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <>
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+        <div className="flex flex-row space-x-4" data-testid="character-details">
+          <div>
+            <img
+              src={character.image}
+              alt={`${character.name} - Profile Image`}
+              className="rounded-md"
+            />
+          </div>
+          <div className="flex-grow">
+            <p className="font-bold text-3xl border-b border-gray-300 pb-4 mb-4">
+              {character.name}
+            </p>
+            <p>Status: {character.status}</p>
+            <p>Type: {character.species}</p>
+            <p>Location: {character.location?.name}</p>
+            <button className="bg-orange-500 rounded-md px-4 py-2 text-white hover:bg-orange-400 mt-2">
+              Add to favorites
+            </button>
+          </div>
+        </div>
+      </div>
+      <a
+        href={`/`}
+        className="bg-blue-500 rounded-md px-4 py-2 text-white hover:bg-blue-400"
+        data-testid="characters-list-link"
+      >
+        Back to list
+      </a>
+    </>
+  );
+};
+
+export default CharacterDetails;
